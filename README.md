@@ -93,15 +93,29 @@ The installer creates the following structure in your project:
 
 The harness coordinates specialized AI agents, each with defined authority and handoff rules:
 
-| Agent | Role | Authority |
-|-------|------|-----------|
-| **OpenAgent** | Architecture, Contracts, ADRs | Final sign-off, architectural decisions |
-| **OpenAgent** | Intent, Scope, Acceptance Criteria | Task validation, scope enforcement |
-| **ContextScout** | Discovery, File Path Discovery | Mismatch reports, context gathering |
-| **CoderAgent** | Implementation, Repairs, Features | Code generation, bug fixes |
-| **OpenCoder** | Interface Gate, Simplicity | API review, interface validation |
-| **OpenCoder** | Refactor Gate, Maintainability | Code quality, refactoring decisions |
-| **OpenCoder** | Performance Diagnostics | Performance analysis, optimization |
+### Harness Role → Fork Agent Mapping
+
+The original harness defined 7 specialized roles. This fork maps them to 4 actual agents:
+
+| Harness Role | Fork Agent | Authority |
+|--------------|-----------|-----------|
+| BROOKS_ARCHITECT | **OpenAgent** | Architecture, contracts, ADRs, final sign-off |
+| JOBS_INTENT_GATE | **OpenAgent** | Intent, scope, acceptance criteria, task validation |
+| SCOUT_RECON | **ContextScout** | Discovery, file path discovery, mismatch reports |
+| WOZ_BUILDER | **CoderAgent** | Implementation, repairs, features, code generation |
+| PIKE_INTERFACE_REVIEW | **OpenCoder** | Interface gate, simplicity, API review |
+| FOWLER_REFACTOR_GATE | **OpenCoder** | Refactor gate, maintainability, code quality |
+| BELLARD_DIAGNOSTICS_PERF | **OpenCoder** | Performance diagnostics, optimization |
+
+### Why Multiple Roles Map to One Agent
+
+The fork consolidates specialized harness roles into fewer, more capable agents:
+
+- **OpenAgent** handles both architecture (BROOKS) and intent validation (JOBS)
+- **OpenCoder** handles interface review (PIKE), refactoring (FOWLER), and performance (BELLARD)
+- **ContextScout** and **CoderAgent** retain their original specialized roles
+
+This reduces coordination overhead while preserving role boundaries through agent configuration.
 
 ### Routing Policy
 
