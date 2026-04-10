@@ -91,31 +91,37 @@ The installer creates the following structure in your project:
 
 ## 🤖 Agent Roles
 
-The harness coordinates specialized AI agents, each with defined authority and handoff rules:
+The harness coordinates specialized AI agents from your Notion Agent Harness Team database:
 
-### Harness Role → Fork Agent Mapping
+### Core Agents (Primary)
 
-The original harness defined 7 specialized roles. This fork maps them to 4 actual agents:
+| Agent | Persona | Role | Authority |
+|-------|---------|------|-----------|
+| **BROOKS_ARCHITECT** | Frederick P. Brooks Jr. | Chief Architect | Conceptual integrity, contracts, ADRs, final sign-off |
+| **JOBS_INTENT_GATE** | Steve Jobs | Intent Gate + Scope Owner | Converts requests into objectives, constraints, acceptance criteria |
 
-| Harness Role | Fork Agent | Authority |
-|--------------|-----------|-----------|
-| BROOKS_ARCHITECT | **OpenAgent** | Architecture, contracts, ADRs, final sign-off |
-| JOBS_INTENT_GATE | **OpenAgent** | Intent, scope, acceptance criteria, task validation |
-| SCOUT_RECON | **ContextScout** | Discovery, file path discovery, mismatch reports |
-| WOZ_BUILDER | **CoderAgent** | Implementation, repairs, features, code generation |
-| PIKE_INTERFACE_REVIEW | **OpenCoder** | Interface gate, simplicity, API review |
-| FOWLER_REFACTOR_GATE | **OpenCoder** | Refactor gate, maintainability, code quality |
-| BELLARD_DIAGNOSTICS_PERF | **OpenCoder** | Performance diagnostics, optimization |
+### Core Subagents (Specialist/Utility)
 
-### Why Multiple Roles Map to One Agent
+| Agent | Persona | Role | Authority |
+|-------|---------|------|-----------|
+| **SCOUT_RECON** | none | Recon + Discovery | Fast repo scanning, file path finding, pattern grep |
+| **PIKE_INTERFACE_REVIEW** | Rob Pike | Interface + Simplicity Gate | Reviews surface area, concurrency hazards, API ergonomics |
+| **FOWLER_REFACTOR_GATE** | Martin Fowler | Maintainability Gate | Ensures changes are incremental, reversible, no debt |
 
-The fork consolidates specialized harness roles into fewer, more capable agents:
+### Code Subagents (Subagent/Specialist)
 
-- **OpenAgent** handles both architecture (BROOKS) and intent validation (JOBS)
-- **OpenCoder** handles interface review (PIKE), refactoring (FOWLER), and performance (BELLARD)
-- **ContextScout** and **CoderAgent** retain their original specialized roles
+| Agent | Persona | Role | Authority |
+|-------|---------|------|-----------|
+| **WOZ_BUILDER** | Steve Wozniak | Primary Builder | Implements Brooks plan, ships working code, tests, clean diffs |
+| **BELLARD_DIAGNOSTICS_PERF** | Fabrice Bellard | Performance + Deep Diagnostics | Measurement-first, benchmarks, low-level failure diagnosis |
 
-This reduces coordination overhead while preserving role boundaries through agent configuration.
+### Agent Definitions Source
+
+All agent definitions are maintained in Notion:
+- **Agent Harness Team Database**: https://www.notion.so/555af02240844238adddb721389ec27c
+- **Agent Performance Log**: https://www.notion.so/8c15658e5ed64e5e96b28d8fec92e230
+
+The `.opencode/agent/` files are generated from Notion definitions.
 
 ### Routing Policy
 
