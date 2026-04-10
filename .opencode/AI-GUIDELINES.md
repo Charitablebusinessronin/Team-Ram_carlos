@@ -1,3 +1,4 @@
+
 # AI Guidelines: Repository Documentation Standards
 
 > [!IMPORTANT]

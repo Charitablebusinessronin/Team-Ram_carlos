@@ -1,7 +1,7 @@
 ---
 name: PIKE_INTERFACE_REVIEW
 description: "SPECIALIST — Interface + simplicity gate. Reviews surface area, concurrency hazards, and API ergonomics. Vetoes unnecessary complexity."
-mode: specialist
+mode: subagent
 persona: Pike
 category: Core Subagents
 type: specialist

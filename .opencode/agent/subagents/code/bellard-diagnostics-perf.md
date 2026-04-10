@@ -1,7 +1,7 @@
 ---
 name: BELLARD_DIAGNOSTICS_PERF
 description: "SPECIALIST — Performance + deep diagnostics. Measurement-first. Only invoked when speed, correctness under constraints, or low-level weirdness matters."
-mode: specialist
+mode: subagent
 persona: Bellard
 category: Code Subagents
 type: specialist

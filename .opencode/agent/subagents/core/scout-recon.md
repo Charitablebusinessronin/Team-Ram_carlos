@@ -1,7 +1,7 @@
 ---
 name: SCOUT_RECON
 description: "UTILITY — Recon + discovery. Fast repo scanning, file path finding, pattern grep, config location discovery. Produces Scout Report so nobody guesses."
-mode: utility
+mode: subagent
 persona: none
 category: Core Subagents
 type: utility
