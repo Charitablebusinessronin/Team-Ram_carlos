@@ -45,7 +45,7 @@ An Agent is a specialized AI persona with defined authority, allowed tools, and 
 **States:** `idle | active | blocked | completed | failed`
 
 **Key fields:**
-- `agent_id` — Unique identifier (e.g., `scout_recon`, `woz_builder`)
+- `agent_id` — Unique identifier (e.g., `contextscout`, `coderagent`)
 - `role` — Functional role (e.g., "Discovery", "Implementation", "Architecture")
 - `authority` — Decision-making scope
 - `allowed_tools` — Tools this agent may invoke
@@ -146,19 +146,19 @@ The Routing Policy is a deterministic rule set that selects the best agent for a
 
 ### Components
 
-**SCOUT_RECON** — Discovery agent responsible for producing Scout Reports (paths, entrypoints, mismatches, risks). Invoked first in every run loop.
+**ContextScout** — Discovery agent responsible for producing Scout Reports (paths, entrypoints, mismatches, risks). Invoked first in every run loop.
 
-**JOBS_INTENT_GATE** — Intent and scope agent responsible for producing Intent Briefs and Acceptance Criteria. Blocks execution until signed.
+**OpenAgent** — Intent and scope agent responsible for producing Intent Briefs and Acceptance Criteria. Blocks execution until signed.
 
-**BROOKS_ARCHITECT** — Architecture agent responsible for contracts, ADRs, and final routing policy. Final sign-off on architectural decisions.
+**OpenAgent** — Architecture agent responsible for contracts, ADRs, and final routing policy. Final sign-off on architectural decisions.
 
-**WOZ_BUILDER** — Implementation agent responsible for executing fixes and features. Primary builder.
+**CoderAgent** — Implementation agent responsible for executing fixes and features. Primary builder.
 
-**PIKE_INTERFACE_REVIEW** — Interface gate agent responsible for rejecting unnecessary surface area. Ensures simplicity.
+**OpenCoder** — Interface gate agent responsible for rejecting unnecessary surface area. Ensures simplicity.
 
-**FOWLER_REFACTOR_GATE** — Refactor gate agent responsible for preventing debt accumulation. Ensures maintainability.
+**OpenCoder** — Refactor gate agent responsible for preventing debt accumulation. Ensures maintainability.
 
-**BELLARD_DIAGNOSTICS_PERF** — Performance and diagnostics agent responsible for measurement-first optimization. Invoked only when perf/low-level constraints apply.
+**OpenCoder** — Performance and diagnostics agent responsible for measurement-first optimization. Invoked only when perf/low-level constraints apply.
 
 **Performance Log (Postgres)** — Structured event storage accessed via MCP_DOCKER tools.
 
@@ -181,13 +181,13 @@ graph TD
         LOG["Performance Log (Postgres)"]
         
         subgraph AGENTS["Specialized Agents"]
-            SCOUT["SCOUT_RECON"]
-            JOBS["JOBS_INTENT_GATE"]
-            BROOKS["BROOKS_ARCHITECT"]
-            WOZ["WOZ_BUILDER"]
-            PIKE["PIKE_INTERFACE_REVIEW"]
-            FOWLER["FOWLER_REFACTOR_GATE"]
-            BELLARD["BELLARD_DIAGNOSTICS_PERF"]
+            SCOUT["ContextScout"]
+            JOBS["OpenAgent"]
+            BROOKS["OpenAgent"]
+            WOZ["CoderAgent"]
+            PIKE["OpenCoder"]
+            FOWLER["OpenCoder"]
+            BELLARD["OpenCoder"]
         end
     end
 
@@ -217,25 +217,25 @@ graph TD
 sequenceDiagram
     actor User
     participant Router as Routing Policy Engine
-    participant Scout as SCOUT_RECON
-    participant Jobs as JOBS_INTENT_GATE
-    participant Brooks as BROOKS_ARCHITECT
-    participant Woz as WOZ_BUILDER
+    participant Scout as ContextScout
+    participant Jobs as OpenAgent
+    participant Brooks as OpenAgent
+    participant Woz as CoderAgent
     participant Log as Performance Log
 
     User->>Router: Submit Task (mode=NIGHT_BUILD)
     Router->>Log: Query Performance History
     Log-->>Router: Return Metrics
-    Router->>Scout: Invoke SCOUT_RECON
+    Router->>Scout: Invoke ContextScout
     Scout->>Log: AGENT_INVOKED
     Scout->>Log: AGENT_COMPLETED
-    Router->>Jobs: Invoke JOBS_INTENT_GATE
+    Router->>Jobs: Invoke OpenAgent
     Jobs->>Log: AGENT_INVOKED
     Jobs->>Log: AGENT_COMPLETED
-    Router->>Brooks: Invoke BROOKS_ARCHITECT
+    Router->>Brooks: Invoke OpenAgent
     Brooks->>Log: AGENT_INVOKED
     Brooks->>Log: AGENT_COMPLETED
-    Router->>Woz: Invoke WOZ_BUILDER
+    Router->>Woz: Invoke CoderAgent
     Woz->>Log: AGENT_INVOKED
     Woz->>Log: AGENT_COMPLETED
     Router->>User: Return Result
@@ -280,10 +280,10 @@ erDiagram
 ```mermaid
 graph LR
     subgraph PRODUCERS["Event Producers"]
-        SCOUT["SCOUT_RECON"]
-        JOBS["JOBS_INTENT_GATE"]
-        BROOKS["BROOKS_ARCHITECT"]
-        WOZ["WOZ_BUILDER"]
+        SCOUT["ContextScout"]
+        JOBS["OpenAgent"]
+        BROOKS["OpenAgent"]
+        WOZ["CoderAgent"]
     end
     
     subgraph BUS["Event Bus"]
@@ -329,7 +329,7 @@ graph LR
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `agent_id` | string | Yes | Unique identifier (e.g., `scout_recon`) |
+| `agent_id` | string | Yes | Unique identifier (e.g., `contextscout`) |
 | `role` | string | Yes | Functional role |
 | `authority` | jsonb | Yes | Decision-making scope |
 | `allowed_tools` | jsonb | Yes | Tools this agent may invoke |
@@ -353,13 +353,13 @@ graph LR
 
 ### Ordering
 
-1. **SCOUT_RECON** MUST run first to produce Scout Report
-2. **JOBS_INTENT_GATE** MUST run second to produce Intent Brief + Acceptance Criteria
-3. **BROOKS_ARCHITECT** MUST run third to produce Contracts/ADRs and select route
-4. **WOZ_BUILDER** MUST run fourth to implement step-by-step with validations
-5. **PIKE_INTERFACE_REVIEW** MUST run fifth to reject unnecessary surface area
-6. **FOWLER_REFACTOR_GATE** MUST run sixth to prevent debt accumulation
-7. **BELLARD_DIAGNOSTICS_PERF** MUST run only if perf/low-level constraints apply
+1. **ContextScout** MUST run first to produce Scout Report
+2. **OpenAgent** MUST run second to produce Intent Brief + Acceptance Criteria
+3. **OpenAgent** MUST run third to produce Contracts/ADRs and select route
+4. **CoderAgent** MUST run fourth to implement step-by-step with validations
+5. **OpenCoder** MUST run fifth to reject unnecessary surface area
+6. **OpenCoder** MUST run sixth to prevent debt accumulation
+7. **OpenCoder** MUST run only if perf/low-level constraints apply
 
 ### Eligibility
 
@@ -372,8 +372,8 @@ graph LR
 ### Failure Semantics
 
 - If primary agent fails → log `AGENT_FAILED` → try fallback agent
-- If no fallback → escalate to BROOKS_ARCHITECT
-- If BROOKS_ARCHITECT fails → log `BLOCKER_HIT` → stop (hard blocker)
+- If no fallback → escalate to OpenAgent
+- If OpenAgent fails → log `BLOCKER_HIT` → stop (hard blocker)
 
 ### Retry
 

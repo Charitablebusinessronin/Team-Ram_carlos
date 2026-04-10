@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS events (
 | `id` | serial | Yes | Auto-incrementing ID |
 | `event_type` | varchar(100) | Yes | Type of event (see [Event Types](#event-types)) |
 | `group_id` | varchar(100) | Yes | Grouping identifier (e.g., task ID) |
-| `agent_id` | varchar(100) | Yes | Agent responsible (e.g., `scout_recon`) |
+| `agent_id` | varchar(100) | Yes | Agent responsible (e.g., `contextscout`) |
 | `status` | varchar(50) | Yes | Outcome (`success`, `failed`, `pending`) |
 | `metadata` | jsonb | No | Additional context (duration, error message, etc.) |
 | `created_at` | timestamp | Yes | Event timestamp (UTC) |
@@ -162,7 +162,7 @@ Every run MUST log documentation adherence signals:
 {
   "event_type": "DOC_COMPLIANCE_CHECK",
   "group_id": "task-123",
-  "agent_id": "woz_builder",
+  "agent_id": "coderagent",
   "status": "success",
   "metadata": {
     "guidelines_loaded": true,
@@ -183,7 +183,7 @@ All logging MUST use MCP_DOCKER tools:
 MCP_DOCKER_insert_data({
   table_name: "events",
   columns: "event_type, group_id, agent_id, status, metadata",
-  values: "'AGENT_INVOKED', 'task-123', 'scout_recon', 'pending', '{\"duration_ms\": 0}'"
+  values: "'AGENT_INVOKED', 'task-123', 'contextscout', 'pending', '{\"duration_ms\": 0}'"
 })
 ```
 
@@ -192,13 +192,13 @@ MCP_DOCKER_insert_data({
 All queries MUST use MCP_DOCKER tools:
 
 ```javascript
-// Example: Query success rate for SCOUT_RECON
+// Example: Query success rate for ContextScout
 MCP_DOCKER_execute_sql({
   sql_query: `
     SELECT 
       COUNT(CASE WHEN status = 'success' THEN 1 END) * 100.0 / COUNT(*) as success_rate
     FROM events
-    WHERE agent_id = 'scout_recon'
+    WHERE agent_id = 'contextscout'
       AND event_type = 'AGENT_COMPLETED'
       AND created_at > NOW() - INTERVAL '7 days'
   `
@@ -239,27 +239,27 @@ MCP_DOCKER_execute_sql({
 
 ### LOGGING-UC1: Log Agent Invocation
 
-**Scenario:** SCOUT_RECON is invoked for a discovery task.
+**Scenario:** ContextScout is invoked for a discovery task.
 
 **Steps:**
-1. Routing Policy Engine selects SCOUT_RECON
+1. Routing Policy Engine selects ContextScout
 2. Routing Policy Engine logs `AGENT_INVOKED`:
    ```json
    {
      "event_type": "AGENT_INVOKED",
      "group_id": "task-123",
-     "agent_id": "scout_recon",
+     "agent_id": "contextscout",
      "status": "pending",
      "metadata": {"duration_ms": 0}
    }
    ```
-3. SCOUT_RECON executes
-4. SCOUT_RECON logs `AGENT_COMPLETED`:
+3. ContextScout executes
+4. ContextScout logs `AGENT_COMPLETED`:
    ```json
    {
      "event_type": "AGENT_COMPLETED",
      "group_id": "task-123",
-     "agent_id": "scout_recon",
+     "agent_id": "contextscout",
      "status": "success",
      "metadata": {"duration_ms": 5000}
    }
@@ -271,16 +271,16 @@ MCP_DOCKER_execute_sql({
 
 ### LOGGING-UC2: Calculate Success Rate
 
-**Scenario:** Analytics dashboard queries success rate for WOZ_BUILDER.
+**Scenario:** Analytics dashboard queries success rate for CoderAgent.
 
 **Steps:**
-1. Dashboard sends `GET /v1/metrics?agent_id=woz_builder&event_type=AGENT_COMPLETED`
+1. Dashboard sends `GET /v1/metrics?agent_id=coderagent&event_type=AGENT_COMPLETED`
 2. API queries Postgres:
    ```sql
    SELECT 
      COUNT(CASE WHEN status = 'success' THEN 1 END) * 100.0 / COUNT(*) as success_rate
    FROM events
-   WHERE agent_id = 'woz_builder'
+   WHERE agent_id = 'coderagent'
      AND event_type IN ('AGENT_INVOKED', 'AGENT_COMPLETED')
      AND created_at > NOW() - INTERVAL '7 days'
    ```
@@ -288,7 +288,7 @@ MCP_DOCKER_execute_sql({
    ```json
    {
      "metrics": [{
-       "agent_id": "woz_builder",
+       "agent_id": "coderagent",
        "success_rate": 85.5
      }]
    }
@@ -300,15 +300,15 @@ MCP_DOCKER_execute_sql({
 
 ### LOGGING-UC3: Log Fallback Triggered
 
-**Scenario:** WOZ_BUILDER fails, PIKE_INTERFACE_REVIEW is invoked as fallback.
+**Scenario:** CoderAgent fails, OpenCoder is invoked as fallback.
 
 **Steps:**
-1. WOZ_BUILDER logs `AGENT_FAILED`:
+1. CoderAgent logs `AGENT_FAILED`:
    ```json
    {
      "event_type": "AGENT_FAILED",
      "group_id": "task-456",
-     "agent_id": "woz_builder",
+     "agent_id": "coderagent",
      "status": "failed",
      "metadata": {"error": "Validation failed: interface added without review"}
    }
@@ -320,10 +320,10 @@ MCP_DOCKER_execute_sql({
      "group_id": "task-456",
      "agent_id": "routing_policy_engine",
      "status": "pending",
-     "metadata": {"from": "woz_builder", "to": "pike_interface_review"}
+     "metadata": {"from": "coderagent", "to": "opencoder"}
    }
    ```
-3. PIKE_INTERFACE_REVIEW logs `AGENT_INVOKED` + `AGENT_COMPLETED`
+3. OpenCoder logs `AGENT_INVOKED` + `AGENT_COMPLETED`
 
 **Result:** Fallback tracked, metrics updated.
 

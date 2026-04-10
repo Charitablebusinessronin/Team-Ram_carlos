@@ -50,9 +50,9 @@ Schema: [tasks.schema.json](json-schema/tasks.schema.json)
 | Value | Description |
 |-------|-------------|
 | `pending` | Task submitted, not yet routed |
-| `planning` | Task being planned by JOBS_INTENT_GATE |
+| `planning` | Task being planned by OpenAgent |
 | `executing` | Task being executed by assigned agent |
-| `validating` | Task being validated by PIKE_INTERFACE_REVIEW or FOWLER_REFACTOR_GATE |
+| `validating` | Task being validated by OpenCoder or OpenCoder |
 | `completed` | Task completed successfully |
 | `failed` | Task failed (hard blocker or error) |
 | `blocked` | Task blocked waiting for approval or clarification |
@@ -67,7 +67,7 @@ Schema: [agents.schema.json](json-schema/agents.schema.json)
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `agent_id` | string | Yes | Unique identifier (e.g., `scout_recon`, `woz_builder`) |
+| `agent_id` | string | Yes | Unique identifier (e.g., `contextscout`, `coderagent`) |
 | `role` | string | Yes | Functional role (e.g., "Discovery", "Implementation", "Architecture") |
 | `authority` | jsonb | Yes | Decision-making scope (what this agent can decide) |
 | `allowed_tools` | jsonb | Yes | Tools this agent may invoke (array of tool names) |
@@ -113,7 +113,7 @@ Schema: [events.schema.json](json-schema/events.schema.json)
 | `id` | serial | Yes | Auto-incrementing ID |
 | `event_type` | varchar(100) | Yes | Type of event (see [Event Types](#event-types)) |
 | `group_id` | varchar(100) | Yes | Grouping identifier (e.g., task ID) |
-| `agent_id` | varchar(100) | Yes | Agent responsible (e.g., `scout_recon`) |
+| `agent_id` | varchar(100) | Yes | Agent responsible (e.g., `contextscout`) |
 | `status` | varchar(50) | Yes | Outcome: `success`, `failed`, `pending` |
 | `metadata` | jsonb | No | Additional context (duration, error message, etc.) |
 | `created_at` | timestamp | Yes | Event timestamp (UTC) |

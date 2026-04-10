@@ -53,23 +53,23 @@ The routing table defines the primary agent, fallback agent, and condition for e
 
 | Task Type | Primary Agent | Fallback Agent | Condition |
 |-----------|---------------|----------------|-----------|
-| Discovery | SCOUT_RECON | None | Always |
-| Intent/Scope | JOBS_INTENT_GATE | None | Always |
-| Architecture | BROOKS_ARCHITECT | None | Always |
-| Implementation | WOZ_BUILDER | PIKE_INTERFACE_REVIEW (if interface added) | Always |
-| Refactor | FOWLER_REFACTOR_GATE | None | Always |
-| Performance | BELLARD_DIAGNOSTICS_PERF | None | Only if perf constraint |
-| Validation | PIKE_INTERFACE_REVIEW | FOWLER_REFACTOR_GATE | Always |
+| Discovery | ContextScout | None | Always |
+| Intent/Scope | OpenAgent | None | Always |
+| Architecture | OpenAgent | None | Always |
+| Implementation | CoderAgent | OpenCoder (if interface added) | Always |
+| Refactor | OpenCoder | None | Always |
+| Performance | OpenCoder | None | Only if perf constraint |
+| Validation | OpenCoder | OpenCoder | Always |
 
 ### Routing Rules
 
-1. **Discovery tasks** — ALWAYS route to SCOUT_RECON first
-2. **Intent/Scope tasks** — ALWAYS route to JOBS_INTENT_GATE first
-3. **Architecture tasks** — ALWAYS route to BROOKS_ARCHITECT first
-4. **Implementation tasks** — Route to WOZ_BUILDER, then PIKE_INTERFACE_REVIEW if interface added
-5. **Refactor tasks** — ALWAYS route to FOWLER_REFACTOR_GATE
-6. **Performance tasks** — Route to BELLARD_DIAGNOSTICS_PERF only if performance constraint exists
-7. **Validation tasks** — Route to PIKE_INTERFACE_REVIEW, then FOWLER_REFACTOR_GATE if needed
+1. **Discovery tasks** — ALWAYS route to ContextScout first
+2. **Intent/Scope tasks** — ALWAYS route to OpenAgent first
+3. **Architecture tasks** — ALWAYS route to OpenAgent first
+4. **Implementation tasks** — Route to CoderAgent, then OpenCoder if interface added
+5. **Refactor tasks** — ALWAYS route to OpenCoder
+6. **Performance tasks** — Route to OpenCoder only if performance constraint exists
+7. **Validation tasks** — Route to OpenCoder, then OpenCoder if needed
 
 ---
 
@@ -85,11 +85,11 @@ function selectFallbackAgent(taskType, primaryAgent, error):
     
     if fallbackAgent is None:
         log BLOCKER_HIT (reason="No fallback agent for task type")
-        return BROOKS_ARCHITECT  // Escalate to architect
+        return OpenAgent  // Escalate to architect
     
     if error is "Agent exceeded authority":
         log BLOCKER_HIT (reason="Authority violation")
-        return BROOKS_ARCHITECT  // Escalate to architect
+        return OpenAgent  // Escalate to architect
     
     if error is "Agent failed validation":
         log FALLBACK_TRIGGERED (from=primaryAgent, to=fallbackAgent)
@@ -102,10 +102,10 @@ function selectFallbackAgent(taskType, primaryAgent, error):
 
 | Scenario | Primary Agent | Error | Fallback Agent | Outcome |
 |----------|---------------|-------|----------------|---------|
-| Discovery fails | SCOUT_RECON | Timeout | None | Escalate to BROOKS_ARCHITECT |
-| Implementation fails | WOZ_BUILDER | Validation error | PIKE_INTERFACE_REVIEW | Retry with interface review |
-| Refactor fails | FOWLER_REFACTOR_GATE | Debt detected | None | Escalate to BROOKS_ARCHITECT |
-| Performance fails | BELLARD_DIAGNOSTICS_PERF | No perf constraint | None | Skip (not applicable) |
+| Discovery fails | ContextScout | Timeout | None | Escalate to OpenAgent |
+| Implementation fails | CoderAgent | Validation error | OpenCoder | Retry with interface review |
+| Refactor fails | OpenCoder | Debt detected | None | Escalate to OpenAgent |
+| Performance fails | OpenCoder | No perf constraint | None | Skip (not applicable) |
 
 ---
 
@@ -117,15 +117,15 @@ When multiple routing approaches are possible, the Routing Policy Engine resolve
 
 1. **Performance evidence** — If performance history shows one agent has higher success rate, choose that agent
 2. **Role constraints** — If performance evidence is inconclusive, choose agent with appropriate authority
-3. **Architect decision** — If role constraints are ambiguous, BROOKS_ARCHITECT decides
+3. **Architect decision** — If role constraints are ambiguous, OpenAgent decides
 
 ### Conflict Scenarios
 
 | Conflict | Resolution |
 |----------|------------|
-| Performance evidence inconclusive | BROOKS_ARCHITECT decides based on architecture |
-| Architecture ambiguous | BROOKS_ARCHITECT decides based on principle |
-| Destructive decision required | JOBS_INTENT_GATE must approve before routing |
+| Performance evidence inconclusive | OpenAgent decides based on architecture |
+| Architecture ambiguous | OpenAgent decides based on principle |
+| Destructive decision required | OpenAgent must approve before routing |
 
 ---
 
@@ -188,10 +188,10 @@ function selectAgent(taskType):
 
 **Steps:**
 1. Developer submits task with `task_type=Discovery`
-2. Routing Policy Engine queries Performance Log for SCOUT_RECON success rate
+2. Routing Policy Engine queries Performance Log for ContextScout success rate
 3. Routing Policy Engine calculates routing score
-4. Routing Policy Engine selects SCOUT_RECON (primary agent)
-5. SCOUT_RECON executes and logs `AGENT_INVOKED` + `AGENT_COMPLETED`
+4. Routing Policy Engine selects ContextScout (primary agent)
+5. ContextScout executes and logs `AGENT_INVOKED` + `AGENT_COMPLETED`
 
 **Result:** Scout Report generated, task marked complete.
 
@@ -203,13 +203,13 @@ function selectAgent(taskType):
 
 **Steps:**
 1. Developer submits task with `task_type=Implementation`
-2. Routing Policy Engine selects WOZ_BUILDER (primary agent)
-3. WOZ_BUILDER executes and logs `AGENT_INVOKED`
-4. WOZ_BUILDER adds new interface, logs `AGENT_FAILED` (validation error)
+2. Routing Policy Engine selects CoderAgent (primary agent)
+3. CoderAgent executes and logs `AGENT_INVOKED`
+4. CoderAgent adds new interface, logs `AGENT_FAILED` (validation error)
 5. Routing Policy Engine checks fallback table
-6. Routing Policy Engine selects PIKE_INTERFACE_REVIEW (fallback agent)
+6. Routing Policy Engine selects OpenCoder (fallback agent)
 7. Routing Policy Engine logs `FALLBACK_TRIGGERED`
-8. PIKE_INTERFACE_REVIEW executes and logs `AGENT_COMPLETED`
+8. OpenCoder executes and logs `AGENT_COMPLETED`
 
 **Result:** Feature implemented with interface review, task marked complete.
 
@@ -221,12 +221,12 @@ function selectAgent(taskType):
 
 **Steps:**
 1. Developer submits task with `task_type=Architecture`
-2. Routing Policy Engine selects BROOKS_ARCHITECT (primary agent)
-3. BROOKS_ARCHITECT logs `AGENT_INVOKED`
-4. BROOKS_ARCHITECT encounters ambiguous architecture decision
-5. BROOKS_ARCHITECT requests clarification from JOBS_INTENT_GATE
-6. JOBS_INTENT_GATE provides clarification
-7. BROOKS_ARCHITECT makes decision and logs `AGENT_COMPLETED`
+2. Routing Policy Engine selects OpenAgent (primary agent)
+3. OpenAgent logs `AGENT_INVOKED`
+4. OpenAgent encounters ambiguous architecture decision
+5. OpenAgent requests clarification from OpenAgent
+6. OpenAgent provides clarification
+7. OpenAgent makes decision and logs `AGENT_COMPLETED`
 
 **Result:** Architecture decision made, task marked complete.
 
@@ -238,13 +238,13 @@ function selectAgent(taskType):
 
 | Agent | Authority | Allowed Tools | Handoff Rules |
 |-------|-----------|---------------|---------------|
-| SCOUT_RECON | Discovery only | Read, grep, find, semantic_search | Handoff to JOBS_INTENT_GATE |
-| JOBS_INTENT_GATE | Intent and scope only | Read, ask_questions | Handoff to BROOKS_ARCHITECT |
-| BROOKS_ARCHITECT | Architecture only | Read, write, create_file, replace_string_in_file | Handoff to WOZ_BUILDER |
-| WOZ_BUILDER | Implementation only | Read, write, create_file, replace_string_in_file, run_in_terminal | Handoff to PIKE_INTERFACE_REVIEW |
-| PIKE_INTERFACE_REVIEW | Interface validation only | Read, grep, semantic_search | Handoff to FOWLER_REFACTOR_GATE |
-| FOWLER_REFACTOR_GATE | Refactor only | Read, write, create_file, replace_string_in_file | Handoff to BROOKS_ARCHITECT |
-| BELLARD_DIAGNOSTICS_PERF | Performance only | Read, run_in_terminal, get_terminal_output | Handoff to WOZ_BUILDER |
+| ContextScout | Discovery only | Read, grep, find, semantic_search | Handoff to OpenAgent |
+| OpenAgent | Intent and scope only | Read, ask_questions | Handoff to OpenAgent |
+| OpenAgent | Architecture only | Read, write, create_file, replace_string_in_file | Handoff to CoderAgent |
+| CoderAgent | Implementation only | Read, write, create_file, replace_string_in_file, run_in_terminal | Handoff to OpenCoder |
+| OpenCoder | Interface validation only | Read, grep, semantic_search | Handoff to OpenCoder |
+| OpenCoder | Refactor only | Read, write, create_file, replace_string_in_file | Handoff to OpenAgent |
+| OpenCoder | Performance only | Read, run_in_terminal, get_terminal_output | Handoff to CoderAgent |
 
 ### Determinism Constraints
 
@@ -255,7 +255,7 @@ function selectAgent(taskType):
 ### Fallback Constraints
 
 1. **MUST try fallback before escalating** — No skipping fallback
-2. **MUST escalate to BROOKS_ARCHITECT if no fallback** — No silent failures
+2. **MUST escalate to OpenAgent if no fallback** — No silent failures
 3. **MUST log `FALLBACK_TRIGGERED` on fallback** — No untracked fallbacks
 
 ---

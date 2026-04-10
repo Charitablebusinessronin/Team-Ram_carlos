@@ -26,19 +26,19 @@ This contract defines the minimum viable harness for deterministic multi-agent o
 **Validation:**
 ```bash
 opencode run --mode=day --task="test scout"
-# Expected: SCOUT_RECON invoked, report generated, approval requested
+# Expected: ContextScout invoked, report generated, approval requested
 ```
 
 **Execution Flow:**
 1. Load AI-GUIDELINES.md as required context
-2. Invoke SCOUT_RECON to produce Scout Report
-3. Invoke JOBS_INTENT_GATE to produce Intent Brief + Acceptance Criteria
+2. Invoke ContextScout to produce Scout Report
+3. Invoke OpenAgent to produce Intent Brief + Acceptance Criteria
 4. Request approval from user
-5. If approved, invoke BROOKS_ARCHITECT to produce Contracts/ADRs
+5. If approved, invoke OpenAgent to produce Contracts/ADRs
 6. Request approval from user
-7. If approved, invoke WOZ_BUILDER to implement step-by-step
-8. Invoke PIKE_INTERFACE_REVIEW to validate interfaces
-9. Invoke FOWLER_REFACTOR_GATE to prevent debt
+7. If approved, invoke CoderAgent to implement step-by-step
+8. Invoke OpenCoder to validate interfaces
+9. Invoke OpenCoder to prevent debt
 10. Validate documentation completeness
 11. Log TASK_COMPLETE
 
@@ -59,18 +59,18 @@ opencode run --mode=day --task="test scout"
 **Validation:**
 ```bash
 opencode run --mode=night --task="fix lint errors"
-# Expected: WOZ_BUILDER invoked, fixes applied, validation run, no approval needed
+# Expected: CoderAgent invoked, fixes applied, validation run, no approval needed
 ```
 
 **Execution Flow:**
 1. Load AI-GUIDELINES.md as required context
-2. Invoke SCOUT_RECON to produce Scout Report
-3. Invoke JOBS_INTENT_GATE to produce Intent Brief + Acceptance Criteria
-4. Invoke BROOKS_ARCHITECT to produce Contracts/ADRs + select route
-5. Invoke WOZ_BUILDER to implement step-by-step with validations
-6. Invoke PIKE_INTERFACE_REVIEW to reject unnecessary surface area
-7. Invoke FOWLER_REFACTOR_GATE to prevent debt
-8. Invoke BELLARD_DIAGNOSTICS_PERF (only if perf constraint)
+2. Invoke ContextScout to produce Scout Report
+3. Invoke OpenAgent to produce Intent Brief + Acceptance Criteria
+4. Invoke OpenAgent to produce Contracts/ADRs + select route
+5. Invoke CoderAgent to implement step-by-step with validations
+6. Invoke OpenCoder to reject unnecessary surface area
+7. Invoke OpenCoder to prevent debt
+8. Invoke OpenCoder (only if perf constraint)
 9. Validate documentation completeness
 10. Log TASK_COMPLETE
 
@@ -84,13 +84,13 @@ opencode run --mode=night --task="fix lint errors"
 
 | Task Type | Primary Agent | Fallback Agent | Condition |
 |-----------|---------------|----------------|-----------|
-| Discovery | SCOUT_RECON | None | Always |
-| Intent/Scope | JOBS_INTENT_GATE | None | Always |
-| Architecture | BROOKS_ARCHITECT | None | Always |
-| Implementation | WOZ_BUILDER | PIKE_INTERFACE_REVIEW (if interface added) | Always |
-| Refactor | FOWLER_REFACTOR_GATE | None | Always |
-| Performance | BELLARD_DIAGNOSTICS_PERF | None | Only if perf constraint |
-| Validation | PIKE_INTERFACE_REVIEW | FOWLER_REFACTOR_GATE | Always |
+| Discovery | ContextScout | None | Always |
+| Intent/Scope | OpenAgent | None | Always |
+| Architecture | OpenAgent | None | Always |
+| Implementation | CoderAgent | OpenCoder (if interface added) | Always |
+| Refactor | OpenCoder | None | Always |
+| Performance | OpenCoder | None | Only if perf constraint |
+| Validation | OpenCoder | OpenCoder | Always |
 
 ### Fallback Logic
 
@@ -100,11 +100,11 @@ function selectFallbackAgent(taskType, primaryAgent, error):
     
     if fallbackAgent is None:
         log BLOCKER_HIT (reason="No fallback agent for task type")
-        return BROOKS_ARCHITECT  // Escalate to architect
+        return OpenAgent  // Escalate to architect
     
     if error is "Agent exceeded authority":
         log BLOCKER_HIT (reason="Authority violation")
-        return BROOKS_ARCHITECT  // Escalate to architect
+        return OpenAgent  // Escalate to architect
     
     if error is "Agent failed validation":
         log FALLBACK_TRIGGERED (from=primaryAgent, to=fallbackAgent)
@@ -115,9 +115,9 @@ function selectFallbackAgent(taskType, primaryAgent, error):
 
 ### Conflict Resolution
 
-- **Performance evidence inconclusive** → BROOKS_ARCHITECT decides
-- **Architecture ambiguous** → BROOKS_ARCHITECT decides
-- **Destructive decision required** → JOBS_INTENT_GATE must approve
+- **Performance evidence inconclusive** → OpenAgent decides
+- **Architecture ambiguous** → OpenAgent decides
+- **Destructive decision required** → OpenAgent must approve
 
 ---
 
@@ -174,7 +174,7 @@ Every run logs:
 **Validation:**
 ```bash
 # Check if logging works
-psql -d allura -c "SELECT COUNT(*) FROM events WHERE agent_id = 'scout_recon';"
+psql -d allura -c "SELECT COUNT(*) FROM events WHERE agent_id = 'contextscout';"
 # Expected: > 0 after smoke test
 ```
 
@@ -230,14 +230,14 @@ ls -1 .opencode/AI-GUIDELINES.md
 opencode run --mode=day --task="create hello world file"
 
 # Expected flow:
-# 1. SCOUT_RECON produces Scout Report
-# 2. JOBS_INTENT_GATE produces Intent Brief + Acceptance Criteria
+# 1. ContextScout produces Scout Report
+# 2. OpenAgent produces Intent Brief + Acceptance Criteria
 # 3. User approves
-# 4. BROOKS_ARCHITECT produces Contracts/ADRs
+# 4. OpenAgent produces Contracts/ADRs
 # 5. User approves
-# 6. WOZ_BUILDER implements
-# 7. PIKE_INTERFACE_REVIEW validates
-# 8. FOWLER_REFACTOR_GATE prevents debt
+# 6. CoderAgent implements
+# 7. OpenCoder validates
+# 8. OpenCoder prevents debt
 # 9. Documentation validated
 # 10. TASK_COMPLETE logged
 ```
@@ -249,12 +249,12 @@ opencode run --mode=day --task="create hello world file"
 opencode run --mode=night --task="fix lint errors"
 
 # Expected flow:
-# 1. SCOUT_RECON produces Scout Report
-# 2. JOBS_INTENT_GATE produces Intent Brief + Acceptance Criteria
-# 3. BROOKS_ARCHITECT produces Contracts/ADRs + selects route
-# 4. WOZ_BUILDER implements
-# 5. PIKE_INTERFACE_REVIEW validates
-# 6. FOWLER_REFACTOR_GATE prevents debt
+# 1. ContextScout produces Scout Report
+# 2. OpenAgent produces Intent Brief + Acceptance Criteria
+# 3. OpenAgent produces Contracts/ADRs + selects route
+# 4. CoderAgent implements
+# 5. OpenCoder validates
+# 6. OpenCoder prevents debt
 # 7. Documentation validated
 # 8. TASK_COMPLETE logged
 # No approvals needed unless destructive change
@@ -269,7 +269,7 @@ Before considering the harness "bootable," validate:
 - [ ] **Upstream remote configured** — `git remote -v` shows both `origin` and `upstream`
 - [ ] **DAY_BUILD command works** — `opencode run --mode=day --task="test scout"` succeeds
 - [ ] **NIGHT_BUILD command works** — `opencode run --mode=night --task="fix lint errors"` succeeds
-- [ ] **Performance logging works** — `SELECT COUNT(*) FROM events WHERE agent_id = 'scout_recon';` returns > 0
+- [ ] **Performance logging works** — `SELECT COUNT(*) FROM events WHERE agent_id = 'contextscout';` returns > 0
 - [ ] **Documentation complete** — All 7 artifacts exist and are valid
 - [ ] **Routing policy enforced** — Tasks route to correct agents based on task type
 - [ ] **Fallback routing works** — Primary agent failure triggers fallback agent

@@ -56,13 +56,13 @@ graph TD
         LOG["Performance Log (Postgres)"]
         
         subgraph AGENTS["Specialized Agents"]
-            SCOUT["SCOUT_RECON"]
-            JOBS["JOBS_INTENT_GATE"]
-            BROOKS["BROOKS_ARCHITECT"]
-            WOZ["WOZ_BUILDER"]
-            PIKE["PIKE_INTERFACE_REVIEW"]
-            FOWLER["FOWLER_REFACTOR_GATE"]
-            BELLARD["BELLARD_DIAGNOSTICS_PERF"]
+            SCOUT["ContextScout"]
+            JOBS["OpenAgent"]
+            BROOKS["OpenAgent"]
+            WOZ["CoderAgent"]
+            PIKE["OpenCoder"]
+            FOWLER["OpenCoder"]
+            BELLARD["OpenCoder"]
         end
     end
 
