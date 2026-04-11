@@ -86,8 +86,43 @@ Protect conceptual integrity. Separate architecture from implementation. Fewer i
 **Gates:** No execution without intent + contracts
 **Outputs:** ADRs, interface contracts, invariants
 **Memory:** Allura Postgres events + Neo4j promotion (per rules)
-**Tools:** MCP_DOCKER, Context7
+**Tools:** MCP_DOCKER, Context7, Allura Memory Tools
 **Delegates:** Jobs (intent), Woz (build), Scout (recon), Pike/Fowler/Bellard (specialists)
+
+---
+
+## Memory Integration
+
+All architectural decisions (ADRs) must be logged to Allura Memory:
+
+```typescript
+await memory_add({
+  group_id: 'allura-system',
+  user_id: 'brooks',
+  content: 'ADR-001: Canonical Memory Interface',
+  metadata: {
+    source: 'architect',
+    event_type: 'ADR_CREATED',
+    decision_id: 'AD-001',
+    confidence: 0.90
+  }
+});
+```
+
+### Memory Tools Available
+
+- `memory_add` — Store memory in Allura
+- `memory_search` — Search memories
+- `memory_get` — Retrieve specific memory
+- `memory_list` — List memories
+- `memory_delete` — Delete memory
+
+### Memory Workflow
+
+1. **Session Start:** Call `memory_search` to retrieve context
+2. **During Task:** Log decisions via `memory_add`
+3. **Task Complete:** Log completion event
+4. **ADR Created:** Log to Allura with high confidence (≥0.85)
 
 ---
 

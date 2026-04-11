@@ -25,6 +25,9 @@ This document captures key architectural and design decisions made in the OpenAg
   - [RK-03: Routing Policy Drift](#rk-03-routing-policy-drift)
   - [RK-04: Documentation Incompleteness](#rk-04-documentation-incompleteness)
   - [RK-05: Multi-Agent Coordination Overhead](#rk-05-multi-agent-coordination-overhead)
+  - [RK-06: Allura Memory Integration Not Configured](#rk-06-memory-system-not-production-ready)
+  - [RK-07: Neo4j Connection Not Configured](#rk-07-neo4j-schema-missing)
+  - [RK-08: Allura Integration Not Tested](#rk-08-tenant-isolation-not-enforced)
 
 ---
 
@@ -109,6 +112,9 @@ This document captures key architectural and design decisions made in the OpenAg
 | [RK-03](#rk-03-routing-policy-drift) | Routing Policy Drift | Medium | ✅ Mitigated |
 | [RK-04](#rk-04-documentation-incompleteness) | Documentation Incompleteness | Low | ✅ Mitigated |
 | [RK-05](#rk-05-multi-agent-coordination-overhead) | Multi-Agent Coordination Overhead | Medium | 🔴 Open |
+| [RK-06](#rk-06-memory-system-not-production-ready) | Memory System Not Production Ready | Critical | 🔴 Open |
+| [RK-07](#rk-07-neo4j-schema-missing) | Neo4j Schema Missing | Critical | 🔴 Open |
+| [RK-08](#rk-08-tenant-isolation-not-enforced) | Tenant Isolation Not Enforced | High | 🔴 Open |
 
 ---
 
@@ -179,3 +185,44 @@ This document captures key architectural and design decisions made in the OpenAg
 | **Mitigation** | **Partial:** The execution order is defined in [BLUEPRINT.md §6](BLUEPRINT.md#6-execution-rules). **Open:** Need to measure and optimize coordination overhead. |
 | **Owner** | OpenAgent |
 | **Related decision** | [AD-01: Deterministic Routing Policy](#ad-01-deterministic-routing-policy) |
+---
+
+### RK-06: Allura Memory Integration Not Configured
+
+| Field | Detail |
+|-------|--------|
+| **Severity** | Critical |
+| **Likelihood** | Certain |
+| **Status** | 🔴 Open |
+| **Description** | The Allura Memory System is production-ready at /home/ronin704/Projects/allura memory, but OpenAgentsControl Harness is not configured to connect to it. The MCP client, agent hooks, and environment configuration are missing. This is an integration gap, not an implementation gap. |
+| **Mitigation** | **Required:** Configure MCP client to connect to Allura, add agent hooks, and update environment configuration. See PRIORITY-ACTIONS.md for integration checklist (4.5 days).. See [MEMORY-READINESS-ASSESSMENT.md](../MEMORY-READINESS-ASSESSMENT.md) for complete audit. |
+| **Owner** | Brooks Architect |
+| **Related decision** | [AD-02: Structured Event Schema](#ad-02-structured-event-schema) |
+
+---
+
+### RK-07: Neo4j Connection Not Configured
+
+| Field | Detail |
+|-------|--------|
+| **Severity** | Critical |
+| **Likelihood** | Certain |
+| **Status** | 🔴 Open |
+| **Description** | Allura's Neo4j database is operational with full schema, but OpenAgentsControl Harness is not configured to connect to it. Need to set NEO4J_URI in .env and update agent definitions to use Allura tools. |
+| **Mitigation** | **Required:** Configure NEO4J_URI in .env to point to Allura's Neo4j instance. Update agent definitions to call Allura tools via MCP_DOCKER. |
+| **Owner** | Brooks Architect |
+| **Related decision** | [AD-02: Structured Event Schema](#ad-02-structured-event-schema) |
+
+---
+
+### RK-08: Allura Integration Not Tested
+
+| Field | Detail |
+|-------|--------|
+| **Severity** | High |
+| **Likelihood** | High |
+| **Status** | 🔴 Open |
+| **Description** | Allura has tenant isolation enforced at the schema level, but OpenAgentsControl Harness has not tested integration with Allura's multi-tenant model. Need to verify `group_id` routing works correctly through Allura tools. |
+| **Mitigation** | **Required:** Test end-to-end integration with Allura tools. Verify `group_id` routing works correctly. Add integration tests for multi-tenant scenarios. |
+| **Owner** | Brooks Architect |
+| **Related decision** | [AD-02: Structured Event Schema](#ad-02-structured-event-schema) |

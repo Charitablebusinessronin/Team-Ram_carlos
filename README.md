@@ -2,6 +2,28 @@
 
 > A deterministic multi-agent orchestration system for AI-powered software development
 
+> [!IMPORTANT]
+> **MEMORY INTEGRATION STATUS: INTEGRATION IN PROGRESS**
+> 
+> The **Allura Memory System** is production-ready at `/home/ronin704/Projects/allura memory`:
+> - ✅ 5 memory tools (MCP server)
+> - ✅ PostgreSQL + Neo4j dual-database
+> - ✅ Governance layer (SOC2/auto modes)
+> - ✅ Tenant isolation enforced
+> - ✅ Append-only audit trail
+> 
+> **OpenAgentsControl Harness integration progress:**
+> - ✅ MCP client configured (`.opencode/mcp-client-config.json`)
+> - ✅ Agent hooks created (`.opencode/hooks/`)
+> - ✅ Performance router wired (`.opencode/routing/`)
+> - ✅ Governance layer integrated (`.opencode/governance/`)
+> - ✅ Environment configured (`.env.example`)
+> - ❌ End-to-end testing pending
+> 
+> **See [ALLURA-INTEGRATION-GUIDE.md](ALLURA-INTEGRATION-GUIDE.md) for complete integration details.**
+> 
+> **Verdict: 🟡 CONDITIONAL GO** — Complete PRIORITY 1.6 testing (1 day) before production use.
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![GitHub release](https://img.shields.io/github/release/Charitablebusinessronin/memoryAgentsControl.svg)](https://github.com/Charitablebusinessronin/memoryAgentsControl/releases)
 [![Smoke Tests](https://img.shields.io/badge/Smoke%20Tests-22%2F22%20passing-brightgreen)](./.opencode/scripts/smoke-test.sh)
