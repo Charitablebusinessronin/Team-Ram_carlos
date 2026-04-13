@@ -3,9 +3,13 @@
  * 
  * This router queries Allura Memory for agent performance metrics
  * and selects the best agent for the task type.
+ * 
+ * v2: Added ε-greedy exploration for cold start and discovery.
+ * With probability ε, a different qualified agent is selected instead
+ * of the historical best, building a richer performance dataset over time.
  */
 
-import { memory_search } from 'mcp:allura-memory';
+import { memory_add, memory_search } from 'mcp:allura-memory';
 
 interface AgentPerformance {
   agentId: string;
@@ -14,10 +18,26 @@ interface AgentPerformance {
   taskCount: number;
 }
 
+interface RoutingConfig {
+  epsilon: number;           // Exploration probability (default 0.1)
+  minTaskCount: number;      // Minimum tasks before reducing exploration
+  explorationDecay: number; // How much to reduce ε after minTaskCount reached
+}
+
+const DEFAULT_CONFIG: RoutingConfig = {
+  epsilon: 0.1,           // 10% chance of exploration
+  minTaskCount: 20,       // After 20 tasks per type, start reducing exploration
+  explorationDecay: 0.5   // Reduce ε by 50% after minimum reached
+};
+
 /**
  * Select the best agent for a task type based on performance history
+ * Uses ε-greedy exploration to discover potentially better agents
  */
-export async function selectAgent(taskType: string): Promise<string> {
+export async function selectAgent(
+  taskType: string, 
+  config: RoutingConfig = DEFAULT_CONFIG
+): Promise<string> {
   try {
     // Query Allura for agent performance
     const results = await memory_search({
@@ -29,11 +49,11 @@ export async function selectAgent(taskType: string): Promise<string> {
     // Analyze success rates
     const agentScores = analyzePerformance(results);
     
-    // Select best agent
-    const bestAgent = selectBestAgent(agentScores);
+    // Select best agent (with ε-greedy exploration)
+    const selectedAgent = selectBestAgentWithExploration(agentScores, taskType, config);
     
-    console.log(`[Router] Selected ${bestAgent} for ${taskType} (score: ${agentScores[bestAgent]?.successRate || 0})`);
-    return bestAgent;
+    console.log(`[Router] Selected ${selectedAgent} for ${taskType}`);
+    return selectedAgent;
   } catch (error) {
     console.error('[Router] Failed to query performance history:', error);
     // Fallback to default routing
@@ -74,23 +94,96 @@ function analyzePerformance(memories: any[]): Record<string, AgentPerformance> {
 }
 
 /**
- * Select the best agent from performance scores
+ * Select the best agent with ε-greedy exploration
+ * 
+ * With probability ε, randomly select a different qualified agent
+ * instead of the historical best. This ensures the system discovers
+ * potentially better agents and avoids getting stuck in local optima.
+ * 
+ * Exploration is highest for cold starts (no data) and decays
+ * as more performance data accumulates.
  */
-function selectBestAgent(agentScores: Record<string, AgentPerformance>): string {
+function selectBestAgentWithExploration(
+  agentScores: Record<string, AgentPerformance>,
+  taskType: string,
+  config: RoutingConfig
+): string {
   const agents = Object.values(agentScores);
   
+  // Cold start: no performance data at all, use default
   if (agents.length === 0) {
-    return 'openagent';  // Default fallback
+    const defaultAgent = getDefaultAgent(taskType);
+    console.log(`[Router] Cold start — using default: ${defaultAgent}`);
+    return defaultAgent;
   }
   
   // Sort by success rate (descending)
   agents.sort((a, b) => b.successRate - a.successRate);
+  const bestAgent = agents[0].agentId;
   
-  return agents[0].agentId;
+  // Calculate total task count for this type
+  const totalTasks = agents.reduce((sum, a) => sum + a.taskCount, 0);
+  
+  // Adjust epsilon: reduce exploration as we gain confidence
+  let adjustedEpsilon = config.epsilon;
+  if (totalTasks >= config.minTaskCount) {
+    adjustedEpsilon = config.epsilon * config.explorationDecay;
+  }
+  
+  // ε-greedy decision
+  if (agents.length > 1 && Math.random() < adjustedEpsilon) {
+    // Explore: pick a random agent that is NOT the current best
+    const candidates = agents.filter(a => a.agentId !== bestAgent);
+    if (candidates.length > 0) {
+      const exploredAgent = candidates[Math.floor(Math.random() * candidates.length)].agentId;
+      logExplorationStep(taskType, bestAgent, exploredAgent, adjustedEpsilon);
+      console.log(
+        `[Router] 🎲 Exploration (ε=${adjustedEpsilon.toFixed(3)}): ` +
+        `chose ${exploredAgent} over ${bestAgent} for ${taskType}`
+      );
+      return exploredAgent;
+    }
+  }
+  
+  // Exploit: pick the best agent
+  return bestAgent;
+}
+
+/**
+ * Log exploration step for audit trail
+ * This builds the dataset that makes future routing better
+ */
+async function logExplorationStep(
+  taskType: string,
+  defaultAgent: string,
+  exploredAgent: string,
+  epsilon: number
+): Promise<void> {
+  try {
+    await memory_add({
+      group_id: 'allura-system',
+      user_id: 'performance-router',
+      content: `Exploration step: ${taskType}`,
+      metadata: {
+        source: 'performance-router',
+        event_type: 'EXPLORATION_STEP',
+        task_type: taskType,
+        default_agent: defaultAgent,
+        explored_agent: exploredAgent,
+        epsilon: epsilon,
+        timestamp: new Date().toISOString()
+      }
+    });
+  } catch (error) {
+    // Best effort — don't block routing if logging fails
+    console.error('[Router] Failed to log exploration step:', error);
+  }
 }
 
 /**
  * Default agent routing table (fallback when Allura is unavailable)
+ * 
+ * Updated v2: Uses actual named-persona agent IDs matching the harness architecture.
  */
 function getDefaultAgent(taskType: string): string {
   const routingTable: Record<string, string> = {
@@ -98,10 +191,27 @@ function getDefaultAgent(taskType: string): string {
     'intent': 'jobs-intent-gate',
     'architecture': 'brooks-architect',
     'implementation': 'woz-builder',
-    'refactor': 'pike-refactorer',
-    'performance': 'fowler-performance',
-    'validation': 'bellard-validator'
+    'interface-review': 'pike-interface-review',
+    'refactor': 'fowler-refactor-gate',
+    'performance': 'bellard-diagnostics-perf',
+    'validation': 'opencoder'
   };
   
   return routingTable[taskType] || 'openagent';
+}
+
+/**
+ * Get the default routing table (for external consumers)
+ */
+export function getDefaultRoutingTable(): Record<string, string> {
+  return {
+    'discovery': 'scout-recon',
+    'intent': 'jobs-intent-gate',
+    'architecture': 'brooks-architect',
+    'implementation': 'woz-builder',
+    'interface-review': 'pike-interface-review',
+    'refactor': 'fowler-refactor-gate',
+    'performance': 'bellard-diagnostics-perf',
+    'validation': 'opencoder'
+  };
 }

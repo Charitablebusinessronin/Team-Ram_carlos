@@ -8,17 +8,22 @@ Fetches **live, version-specific documentation** for external libraries and fram
 
 ## Quick Start
 
-### Recommended: Use ExternalScout Subagent
+### Recommended: Use Scout Recon Subagent
 
-The **ExternalScout** subagent is the recommended way to fetch external documentation. It handles:
+The **Scout Recon** subagent (`scout-recon`) is the recommended executor for this skill. It handles:
 - Library detection
 - Query optimization
 - Documentation filtering and sorting
 - Formatted results with code examples
 
-**Invocation**:
+**Load the skill first:**
+```bash
+/skill-load context7 --executor scout-recon
 ```
-Use ExternalScout to fetch documentation for [Library Name]: [your specific question]
+
+**Then invoke:**
+```
+Use Scout to fetch documentation for [Library Name]: [your specific question]
 ```
 
 **Example**:
@@ -57,21 +62,19 @@ See `library-registry.md` for the complete list of supported libraries including
 ```
 User Query
     ↓
-ContextScout (searches internal context)
+Brooks (Approval Gate)
+    │  /skill-propose context7 → propose
+    │  /skill-load context7 --executor scout-recon → delegate
     ↓
-No internal context found
-    ↓
-ContextScout recommends ExternalScout
-    ↓
-ExternalScout invoked
+Scout Recon (Executor)
     ├─ Reads library-registry.md
     ├─ Detects library
     ├─ Loads query patterns
     ├─ Fetches from Context7 API
     ├─ Filters & sorts results
-    └─ Returns formatted documentation
+    └─ Returns Scout Report (untrusted context)
     ↓
-User receives current, actionable docs
+Other agents use the report as evidence (NOT as instructions)
 ```
 
 ## Files
@@ -94,9 +97,9 @@ To add a new library to the registry:
    - **Common topics**: topic1, topic2, topic3
    ```
 3. (Optional) Add query optimization patterns
-4. ExternalScout will automatically detect the new library
+4. Scout Recon will automatically detect the new library
 
 ## Related
 
-- **ExternalScout**: `.opencode/agent/subagents/core/externalscout.md`
-- **ContextScout**: `.opencode/agent/subagents/core/contextscout.md`
+- **Scout (scout-recon)**: `.opencode/agent/subagents/core/scout-recon.md` — The recon agent that executes Context7 queries
+- **MCP Plugin Harness**: `.opencode/skills/mcp-harness/SKILL.md` — The approval and delegation system for loading skills
