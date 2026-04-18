@@ -1,24 +1,24 @@
 ---
 name: allura-menu
-description: "Interactive menu for Allura Memory surgical team. Quick prompts for common workflows."
+description: "Allura-specific skill. Interactive menu for Allura Brain surgical team. Quick prompts for common Allura workflows. Not part of the generic default surface — requires Allura Brain infrastructure."
 allowed-tools: ["Read", "Grep", "Bash", "mcp__MCP_DOCKER__*"]
 ---
 
 # Allura Menu — Quick Prompts
 
-Interactive menu for common Allura Memory workflows.
+> **This skill is Allura-specific.** It provides quick prompts for Allura Brain workflows and requires MCP_DOCKER tools and Allura Brain infrastructure. It is not part of the generic harness default surface.
 
 ## Menu Structure
 
 ```
 ╔═══════════════════════════════════════════════════════════════╗
-║                    ALLURA MEMORY MENU                        ║
+║                    ALLURA BRAIN MENU                          ║
 ╠═══════════════════════════════════════════════════════════════╣
 ║  [1] 🚀 Start Session      — Load memory, verify infra       ║
 ║  [2] 📋 Create Task        — Generate structured task         ║
 ║  [3] 🎉 Party Mode         — Launch parallel agents           ║
 ║  [4] 📝 Quick Update        — Sync docs with memory            ║
-║  [5] 🔍 Code Review        — Surgical team review             ║
+║  [5] 🔍 Code Review        — Team RAM review                  ║
 ║  [6] 📊 Dashboard           — View system status               ║
 ║  [7] 🧠 Memory Query       — Search Allura Brain              ║
 ║  [8] 📤 Promote            — HITL promotion workflow           ║
@@ -64,7 +64,7 @@ Interactive menu for common Allura Memory workflows.
 **What it does:**
 - Launches all agents in parallel
 - Each agent works independently
-- Sisyphus synthesizes results
+- Brooks synthesizes results
 - Maximum throughput
 
 **Equivalent skill:** `party-mode <task>`
@@ -90,10 +90,10 @@ Interactive menu for common Allura Memory workflows.
 **Trigger:** `code-review`
 
 **What it does:**
-- Oracle reviews architecture
-- Explore finds patterns
-- UX reviews accessibility
-- Sisyphus synthesizes
+- Pike reviews architecture and interface surface
+- Scout finds patterns
+- Fowler checks refactor and maintainability risks
+- Brooks synthesizes
 
 **Equivalent skill:** `code-review`
 
@@ -191,15 +191,14 @@ Type these directly in your IDE:
 
 | Agent | Shortcut | Persona |
 |-------|----------|---------|
-| Sisyphus | `@sisyphus` | Rich Hickey |
-| Atlas | `@atlas` | Gergely Orosz |
-| Hephaestus | `@hephaestus` | Fabrice Bellard |
-| Oracle | `@oracle` | Rob Pike |
-| Librarian | `@librarian` | Julia Evans |
-| Explore | `@explore` | Peter Bourgon |
-| Prometheus | `@prometheus` | Martin Fowler |
-| UX | `@ux` | Sara Soueidan |
-
----
-
+| Brooks | `@brooks` | Frederick P. Brooks Jr. |
+| Jobs | `@jobs` | Steve Jobs |
+| Woz | `@woz` | Steve Wozniak |
+| Pike | `@pike` | Rob Pike |
+| Scout | `@scout` | Utility role |
+| Fowler | `@fowler` | Martin Fowler |
+| Bellard | `@bellard` | Fabrice Bellard |
+| Carmack | `@carmack` | John Carmack |
+| Knuth | `@knuth` | Donald Knuth |
+| Hightower | `@hightower` | Kelsey Hightower |
 **Invoke with:** `allura-menu` or type any quick prompt directly.

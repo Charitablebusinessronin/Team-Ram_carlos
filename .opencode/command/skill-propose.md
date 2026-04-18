@@ -4,35 +4,34 @@ Propose a skill and see which specialist agent handles it.
 
 ## Usage
 
-```
+```bash
 /skill-propose <skill-name>
 ```
 
 ## Examples
 
-```
-/skill-propose code-review           # Code review specialist (@oracle)
-/skill-propose postgres-optimization # Database specialist (@hephaestus)
-/skill-propose system-design         # Architecture specialist (@prometheus)
+```bash
+/skill-propose code-review           # Code review specialist (pike)
+/skill-propose context7              # Documentation and API lookup (scout)
+/skill-propose mcp-harness           # Harness orchestration (brooks)
 ```
 
 ## How It Works
 
 1. Harness looks up skill in registry
 2. Shows skill metadata: purpose, preferred executor, requirements
-3. Logs `SKILL_PROPOSED` event to PostgreSQL
+3. Logs `SKILL_PROPOSED` event (when memory logging is enabled)
 4. Shows next step: execute with `/skill-load`
 
-## Surgical Team
+## Team RAM Skill Routing
 
 | Skill | Executor | Specialty |
-|-------|----------|-----------|
-| `code-review` | `@oracle` | Read-only architecture review |
-| `postgres-optimization` | `@hephaestus` | Deep database work |
-| `system-design` | `@prometheus` | Strategic planning |
-| `frontend-design` | `@ux` | Accessibility-first design |
-| `deep-research` | `@librarian` | Documentation search |
-| `codebase-search` | `@explore` | Pattern discovery |
+| ----- | -------- | --------- |
+| `code-review` | `pike` | Read-only architecture review |
+| `context7` | `scout` | Documentation and API lookup |
+| `mcp-harness` | `brooks` | Harness orchestration |
+| `multi-search` | `scout` | Combined repo and web research |
+| `task-management` | `woz` | Task execution support |
 
 ## Result
 
@@ -40,10 +39,10 @@ Propose a skill and see which specialist agent handles it.
 {
   "event": "SKILL_PROPOSED",
   "skill_name": "code-review",
-  "executor": "oracle",
+  "executor": "pike",
   "description": "Read-only code review and architecture feedback",
   "requirements": ["Can read source files", "Cannot write code"]
 }
 ```
 
-**Note:** Only Brooks routes to specific executors. See `/skill-load`.
+**Note:** The orchestrator routes skills to specific executors. See `/skill-load`.

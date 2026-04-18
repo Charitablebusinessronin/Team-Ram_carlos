@@ -1,48 +1,50 @@
-
 # Agent Directory
 
-This directory is the canonical home for OpenCode agent definitions in this repo.
+This file defines the **live agent surface** for the Team RAM OpenCode Harness.
 
-## Layout
+## Canonical Rule
 
-```
+The flat files in `.opencode/agent/` are the only live agent definitions in this repo.
+
+```text
 .opencode/agent/
-├── core/
-│   ├── brooks-architect.md
-│   └── jobs-intent-gate.md
-└── subagents/
-    ├── core/
-    │   ├── scout-recon.md
-    │   ├── fowler-refactor-gate.md
-    │   └── pike-interface-review.md
-    ├── code/
-    │   ├── bellard-diagnostics-perf.md
-    │   ├── carmack-performance.md
-    │   ├── knuth-data-architect.md
-    │   └── woz-builder.md
-    └── development/
-        └── hightower-devops.md
+├── brooks.md
+├── jobs.md
+├── woz.md
+├── scout.md
+├── pike.md
+├── fowler.md
+├── bellard.md
+├── carmack.md
+├── knuth.md
+└── hightower.md
 ```
 
-## Team RAM (Real Actual Masters)
+## Team RAM
 
-| Display Name | Persona | Role |
-|-------------|---------|------|
-| Architect | Brooks | Orchestrator + Chief Architect |
-| Gate | Jobs | Intent Gate + Scope Owner |
-| Builder | Wozniak | Primary Builder |
-| Performance | Carmack | Performance + Optimization |
-| Diagnostics | Bellard | Deep Diagnostics + Measurement |
-| Interface | Pike | Simplicity Gate |
-| Refactor | Fowler | Maintainability Gate |
-| Recon | Scout | Fast Discovery (read-only) |
-| Data | Knuth | Data Architect + Schema Specialist |
-| DevOps | Hightower | Infrastructure + Deployment |
+| Agent | Persona | Role |
+| --- | --- | --- |
+| Brooks | Frederick P. Brooks Jr. | Architecture and orchestration |
+| Jobs | Steve Jobs | Intent gate and scope owner |
+| Woz | Steve Wozniak | Primary builder |
+| Scout | Utility role | Discovery and recon |
+| Pike | Rob Pike | Interface simplicity |
+| Fowler | Martin Fowler | Refactor safety |
+| Bellard | Fabrice Bellard | Deep diagnostics |
+| Carmack | John Carmack | Performance |
+| Knuth | Donald Knuth | Data and schema |
+| Hightower | Kelsey Hightower | Infra and deployment |
 
-## Rules
+## Legacy Rule
 
-1. Edit agent definitions here.
-2. Do not recreate `.opencode/agents/` as a second live source.
-3. Ralph is a tool integration, not an agent file.
-4. All agents use real-person names (Team RAM), not Greek mythology.
-5. Every agent MUST have an INSTRUCTION BOUNDARY block after frontmatter.
+Nested agent files under `agent/core/` and `agent/subagents/` are legacy reference material unless explicitly revived.
+
+They are **not** the active harness surface.
+
+## Editing Rules
+
+1. Edit live agent behavior in `.opencode/agent/*.md`.
+2. Do not treat nested legacy agent files as active.
+3. Do not create a second live naming scheme.
+4. Team RAM names are the public surface of the harness.
+5. Every live agent file must include an instruction boundary.

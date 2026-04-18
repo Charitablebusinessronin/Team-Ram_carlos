@@ -1,9 +1,11 @@
 ---
 name: memory-client
-description: Connect to Allura's Memory system for AI agent persistence. Use when storing memories, searching knowledge, logging events, or working with the 4-layer memory architecture. Provides MCP tools, connection methods, and usage patterns.
+description: "Allura-specific skill. Connect to Allura Brain memory system for AI agent persistence. Use when storing memories, searching knowledge, logging events, or working with the 4-layer memory architecture. Requires MCP_DOCKER tools and Allura Brain infrastructure."
 ---
 
 # Memory Client
+
+> **This skill is Allura-specific.** It requires MCP_DOCKER tools and Allura Brain infrastructure (PostgreSQL + Neo4j). If you are not using Allura Brain, this skill does not apply.
 
 ## Connect
 
@@ -127,7 +129,7 @@ create_relation({
 
 ```
 Agent → ADR → Governance → Discovery → Control → Neo4j ← PostgreSQL
-                          (HITL)      (ADAS)    (Ralph)
+                          (HITL)      (ADAS)
 ```
 
 ## Troubleshooting

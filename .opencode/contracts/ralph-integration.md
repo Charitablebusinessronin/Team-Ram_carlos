@@ -18,8 +18,8 @@ This contract defines how Open Ralph Wiggum integrates with the Allura harness f
 | Agent / Tool | Role | When to Use |
 |--------------|------|-------------|
 | **Brooks (Architect)** | System design, ADRs, decisions | Architecture work |
-| **Atlas (Conductor)** | Todo orchestration | Task coordination |
-| **Hephaestus (Implementer)** | Deep implementation | Complex features |
+| **Jobs (Conductor)** | Todo orchestration | Task coordination |
+| **Woz (Implementer)** | Deep implementation | Complex features |
 | **Ralph tool** | Autonomous iteration harness | Clear criteria, NIGHT_BUILD |
 
 **Ralph is a toolsmith's harness** — it runs the loop, doesn't design the architecture.

@@ -46,7 +46,7 @@ Every memory is scored 0.0–1.0:
 - **Role:** Read-only memory retrieval specialist. Grace Hopper persona.
 - **Allowed tools:** `mcp__MCP_DOCKER__query_database` (read-only), `mcp__MCP_DOCKER__execute_sql` (read-only), `mcp__MCP_DOCKER__read_neo4j_cypher`
 - **Denied tools:** All write, edit, task creation, and delegation tools
-- **Invoked by:** `/scout <query>`, `@scout <query>` from any agent, or parallel call from Sisyphus
+- **Invoked by:** `/scout <query>`, `@scout <query>` from any agent, or parallel call from Brooks
 - **Always returns:** source database, confidence score (1–5 stars), record IDs, timestamps
 
 ### All Other Agents

@@ -1,12 +1,12 @@
 ---
 name: quick-update
-description: "Quick documentation updates using Allura Brain. Updates docs with memory insights and current context."
+description: "Quick documentation updates using memory. Updates docs with memory insights and current context. Allura Brain is used when available."
 allowed-tools: ["Write", "Read", "Grep", "mcp__MCP_DOCKER__*"]
 ---
 
 # Quick Update — Documentation Sync
 
-Quickly update documentation with insights from Allura Brain.
+Quickly update documentation with insights from memory. When Allura Brain is available, uses MCP_DOCKER tools for search and logging.
 
 ## When to Use
 
@@ -19,47 +19,20 @@ Quickly update documentation with insights from Allura Brain.
 
 ### Phase 1: Identify Target
 
-```javascript
-// What needs updating?
-const target = args[0] // e.g., "activeContext", "progress", "systemPatterns"
-```
+What needs updating? Common targets: `activeContext`, `progress`, `systemPatterns`, `techContext`, `projectbrief`, `productContext`.
 
 ### Phase 2: Gather Context
 
-```javascript
-// Search Allura Brain for relevant insights
-mcp__MCP_DOCKER__search_memories({ query: "<topic>" })
-
-// Read current doc
-Read({ path: `memory-bank/${target}.md` })
-```
+- Search memory for relevant insights (when available)
+- Read the current document
 
 ### Phase 3: Update Document
 
-```javascript
-// Write updated content
-Write({
-  path: `memory-bank/${target}.md`,
-  content: updatedContent
-})
-```
+- Write updated content to the target file
 
 ### Phase 4: Log to Memory
 
-```javascript
-// Log the update
-mcp__MCP_DOCKER__create_entities({
-  entities: [{
-    name: `Doc Update ${target}`,
-    entity_type: "doc_update",
-    observations: [
-      `Updated: ${new Date().toISOString()}`,
-      `File: memory-bank/${target}.md`,
-      `Changes: ${changeSummary}`
-    ]
-  }]
-})
-```
+- Log the update event to your configured memory backend (when available)
 
 ## Update Targets
 
@@ -81,7 +54,7 @@ User: "quick-update progress Added OAuth2 authentication"
 
 Updates:
 - memory-bank/progress.md with new completion
-- Logs to Allura Brain
+- Logs to memory (when available)
 - Updates activeContext if needed
 ```
 
@@ -92,11 +65,35 @@ User: "quick-update systemPatterns Decided to use JWT for auth"
 
 Updates:
 - memory-bank/systemPatterns.md with new pattern
-- Creates ADR in _bmad-output/planning-artifacts/
-- Logs to Allura Brain
+- Creates ADR if applicable
+- Logs to memory (when available)
 ```
 
 ### Pattern 3: After Blocker
+
+```
+User: "quick-update activeContext Blocked on API key from vendor"
+
+Updates:
+- memory-bank/activeContext.md with blocker
+- Logs to memory (when available)
+- Notifies if critical
+```
+
+## Memory Integration
+
+When Allura Brain is available:
+
+1. **Searches** Allura Brain for related insights
+2. **Updates** the target document
+3. **Logs** the change to memory
+4. **Links** to relevant entities
+
+When memory is not available, the update still proceeds — it just writes to the target file without logging.
+
+---
+
+**Invoke with:** `quick-update <target> <change description>`
 
 ```
 User: "quick-update activeContext Blocked on API key from vendor"

@@ -4,16 +4,16 @@ Execute a skill by routing it to a specialist agent executor.
 
 ## Usage
 
-```
+```bash
 /skill-load <skill-name> [--executor <executor-name>]
 ```
 
 ## Examples
 
-```
-/skill-load code-review                       # Use default executor (@oracle)
-/skill-load code-review --executor oracle     # Explicit routing
-/skill-load postgres-optimization --executor hephaestus
+```bash
+/skill-load code-review                       # Use default executor (pike)
+/skill-load code-review --executor pike       # Explicit routing
+/skill-load context7 --executor scout
 ```
 
 ## How It Works
@@ -21,21 +21,23 @@ Execute a skill by routing it to a specialist agent executor.
 1. Validates skill exists and is available
 2. Routes to preferred executor (or specified override)
 3. Executor receives skill context + permissions
-4. Logs `SKILL_LOADED` event to PostgreSQL
+4. Logs `SKILL_LOADED` event (when memory logging is enabled)
 5. Executor begins work
 
-## Surgical Team Executors
+## Team RAM Executors
 
 | Executor | Specialty | Permissions |
-|----------|-----------|-------------|
-| `oracle` | Architecture review | Read-only (no writes) |
-| `hephaestus` | Deep implementation | Full read/write |
-| `prometheus` | Strategic planning | Read + planning tools |
-| `ux` | Design + accessibility | Design tools only |
-| `librarian` | Documentation search | Search tools only |
-| `explore` | Codebase patterns | Read + grep tools |
-| `atlas` | Todo coordination | Task + memory tools |
-| `sisyphus` | Orchestration | All tools (planning only) |
+| -------- | --------- | ----------- |
+| `pike` | Architecture and interface review | Read-only (no writes) |
+| `woz` | Deep implementation | Full read/write |
+| `brooks` | Strategic planning | Read + planning tools |
+| `hightower` | Infrastructure and deployment | Infra tools only |
+| `scout` | Documentation and repo search | Search tools only |
+| `bellard` | Diagnostics and measurement | Read + diagnostics tools |
+| `jobs` | Intent, scope, and task coordination | Task + memory tools |
+| `fowler` | Refactor safety | Read + refactor tools |
+| `carmack` | Performance optimization | Read + profiling tools |
+| `knuth` | Data architecture and schema | Read + data tools |
 
 ## Result
 
@@ -43,10 +45,10 @@ Execute a skill by routing it to a specialist agent executor.
 {
   "event": "SKILL_LOADED",
   "skill_name": "code-review",
-  "executor": "oracle",
-  "context": "project root directory",
+  "executor": "pike",
+  "context": "<project context>",
   "permissions": ["read", "grep", "lsp"]
 }
 ```
 
-**Note:** Only Brooks can route to executors. See `/skill-propose` for skill details.
+**Note:** The orchestrator routes skills to executors. See `/skill-propose` for skill details.

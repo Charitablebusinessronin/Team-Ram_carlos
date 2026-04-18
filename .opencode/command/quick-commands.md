@@ -1,87 +1,101 @@
 ---
-description: "Quick slash commands for Allura Memory surgical team"
-allowed-tools: ["Read", "Grep", "Bash", "mcp__MCP_DOCKER__*"]
+description: "Quick slash commands for the Team RAM OpenCode Harness"
+allowed-tools: ["Read", "Grep", "Bash"]
 ---
 
 # Quick Slash Commands
 
-Type these directly in your IDE for fast access to Allura Memory workflows.
+Type these directly in your IDE for fast access to common Team RAM harness workflows.
 
 ## Session Commands
 
 | Command | Action | Equivalent |
-|---------|--------|------------|
+| --- | --- | --- |
 | `/start` | Start session | `start-session` |
 | `/end <summary>` | End session | `end-session` |
-| `/dash` | Dashboard | `dashboard` |
+| `/dash` | Harness status | `dashboard` |
 
 ## Task Commands
 
 | Command | Action | Equivalent |
-|---------|--------|------------|
-| `/task <desc>` | Create task | `task-creator` |
-| `/promote` | HITL promotion | `curator-team-promote` |
-| `/review` | Code review | `code-review` |
+| --- | --- | --- |
+| `/task <desc>` | Create or shape a task | `task-creator` |
+| `/promote` | Human-in-the-loop promotion | `curator-team-promote` |
+| `/review` | Code review workflow | `code-review` |
 
-## Memory Commands
+## Memory and Coordination Commands
 
 | Command | Action | Equivalent |
-|---------|--------|------------|
-| `/query <term>` | Memory query | `mcp__MCP_DOCKER__search_memories` |
-| `/update <target>` | Quick update | `quick-update` |
-| `/party <task>` | Party mode | `party-mode` |
+| --- | --- | --- |
+| `/query <term>` | Search memory (Allura Brain, if enabled) | `query` |
+| `/update <target>` | Log a short update | `quick-update` |
+| `/party <task>` | Parallel specialist collaboration | `party-mode` |
 
-## Agent Shortcuts
+## Team RAM Agent Shortcuts
 
-| Shortcut | Agent | Persona |
-|----------|-------|---------|
-| `@sisyphus` | Sisyphus | Rich Hickey |
-| `@atlas` | Atlas | Gergely Orosz |
-| `@hephaestus` | Hephaestus | Fabrice Bellard |
-| `@oracle` | Oracle | Rob Pike |
-| `@librarian` | Librarian | Julia Evans |
-| `@explore` | Explore | Peter Bourgon |
-| `@prometheus` | Prometheus | Martin Fowler |
-| `@ux` | UX | Sara Soueidan |
+| Shortcut | Agent | Role |
+| --- | --- | --- |
+| `@brooks` | Brooks | Architecture and orchestration |
+| `@jobs` | Jobs | Intent and scope |
+| `@woz` | Woz | Implementation |
+| `@scout` | Scout | Discovery |
+| `@pike` | Pike | Interface review |
+| `@fowler` | Fowler | Refactor gate |
+| `@bellard` | Bellard | Diagnostics |
+| `@carmack` | Carmack | Performance |
+| `@knuth` | Knuth | Data architecture |
+| `@hightower` | Hightower | Infra and deployment |
 
 ## Usage Examples
 
 ### Start a Session
-```
+
+```text
 /start
 ```
-Loads memory, verifies infrastructure, prepares tools.
+
+Hydrates context, checks readiness, and prepares tools.
 
 ### Create a Task
-```
+
+```text
 /task Add OAuth2 authentication with Google provider
 ```
-Generates structured task file with memory links.
 
-### Launch Party Mode
-```
-/party Implement user dashboard with charts
-```
-Spawns all agents in parallel for maximum throughput.
+Creates a structured starting point for implementation.
 
-### Quick Update
-```
-/update progress Added OAuth2 authentication
-```
-Updates memory-bank/progress.md and logs to Allura Brain.
+### Launch Parallel Review or Build Support
 
-### Query Memory
+```text
+/party Investigate flaky integration tests and propose fixes
 ```
+
+Uses multiple specialists when the task benefits from parallel viewpoints.
+
+### Log Progress
+
+```text
+/update progress Added OAuth2 callback validation and tests
+```
+
+Records a concise progress update. If Allura Brain is enabled, this also supports persistent session memory.
+
+### Query Prior Context
+
+```text
 /query authentication patterns
 ```
-Searches Allura Brain for relevant insights.
 
-### Code Review
-```
+Searches memory for relevant prior fixes, decisions, and patterns. Requires Allura Brain or another memory backend.
+
+### Run a Review
+
+```text
 /review
 ```
-Launches Oracle, Explore, and UX in parallel for review.
+
+Runs the review workflow using the appropriate skill and specialist path.
 
 ---
 
-**All commands work with Allura Brain integration.**
+Allura Brain integration is optional here: useful for persistent coding context, but not required for the harness to be valid.

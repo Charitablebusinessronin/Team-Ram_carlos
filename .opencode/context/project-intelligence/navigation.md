@@ -1,8 +1,8 @@
 <!-- Context: project-intelligence/nav | Priority: critical | Version: 1.1 | Updated: 2026-04-11 -->
 
-# Project Intelligence — Allura Memory
+# Project Intelligence Navigation
 
-> Memory layer for Allura Agent-OS with provable governance, tenant isolation, and auditable promotion.
+> This section is an Allura-specific project intelligence overlay. It documents the Allura memory system and related repo context; it is not the generic harness identity.
 
 ## Quick Routes
 
